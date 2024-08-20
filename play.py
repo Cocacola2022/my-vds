@@ -1,11 +1,16 @@
+import os
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from flask import Flask, request
 from openai import OpenAI
-
-client = OpenAI(api_key='sk-proj-ed4ZrDF5z7Z3L2goS7xRT3BlbkFJnSvvrzEUX7SAEUdalq7s')
-import sqlite3
+from dotenv import load_dotenv
+import time
 import logging
+
+# Загрузка переменных окружения из файла .env
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 app = Flask(__name__)
 
@@ -68,7 +73,7 @@ def webhook():
                     response_text = generate_openai_response(message)
 
                     try:
-                        vk_session = vk_api.VkApi(token='vk1.a.kBFmEQ_KaBpbTxNw9semleVaa62SrBo-mjnfMasjebi5NGWJDQYjcPIGuKM6SpKuFblybVNARpeCZdUIfBo1_hpQlM5I50pi9LEGV7Are-esBG001_sOYK5KytDAqlF17BJTDZrKi7zgTZc_cGuzLEc5Bl-W-yBmw5ftPI8OvuHOrSK_2ufeqHyo8cQQKwuOCTxSAP04wt5Xc2N_jDs30A')
+                        vk_session = vk_api.VkApi(token=os.getenv('VK_API_TOKEN'))
                         vk = vk_session.get_api()
                         vk.messages.send(
                             user_id=user_id,
@@ -85,4 +90,4 @@ def webhook():
             return 'Unsupported Media Type: Content is not application/json', 415
 
 if __name__ == '__main__':
-    app.run(host='77.221.132.47', port=80)
+    app.run(host='0.0.0.0', port=80)
