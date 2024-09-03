@@ -2,10 +2,11 @@ import os
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from flask import Flask, request
-from openai import OpenAI
+from openai import OpenAI, AssistantEventHandler
 from dotenv import load_dotenv
-import time
 import logging
+import telegram
+import asyncio
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()
@@ -13,8 +14,20 @@ load_dotenv()
 # Инициализация OpenAI клиента с использованием API ключа из окружения
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 model = "gpt-4o"
-assistant_id = "asst_ea3YSuPL4zyr6f2f66200khe"
-thread_id = "thread_0iXAjModp4JJN4a1a59qrkjJ"
+
+# Настройки для отправки уведомлений в Telegram
+telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
+telegram_bot = telegram.Bot(token=telegram_bot_token)
+
+# Создание помощника (Assistant) с новым подходом
+assistant = client.beta.assistants.create(
+    name="Auto Repair Consultant",
+    instructions="Ты консультант по кузовному ремонту авто. Твоя цель — помочь клиенту и предложить услуги автосервиса, включая замену порогов и арок, покраску элементов авто. Всегда спрашивай у клиента фото повреждений и контактные данные для записи на осмотр.",
+    tools=[{"type": "code_interpreter"}],
+    model=model,
+)
+
 app = Flask(__name__)
 
 # Настройка логирования для записи в файл и консоль
@@ -22,50 +35,81 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("app.log"),  # Запись логов в файл
-        logging.StreamHandler()          # Одновременный вывод логов в консоль
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
     ]
 )
 
-def wait_for_run_completion(client, thread_id, run_id, sleep_interval=5, timeout=60):
-    start_time = time.time()
-    while True:
-        if time.time() - start_time > timeout:
-            logging.error("Timeout waiting for run to complete.")
-            return None
-        try:
-            run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
-            if run.completed_at:
-                elapsed_time = run.completed_at - run.created_at
-                formatted_elapsed_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
-                logging.info(f"Run completed in {formatted_elapsed_time}")
-                messages = client.beta.threads.messages.list(thread_id=thread_id)
-                last_message = messages.data[0]
-                return last_message.content[0].text.value
-        except Exception as e:
-            logging.error(f"An error occurred while retrieving the run: {e}")
-            break
-        time.sleep(sleep_interval)
+# Класс обработчика событий для работы с потоковой передачей ответов от Assistant
+class EventHandler(AssistantEventHandler):
+    def __init__(self):
+        super().__init__()
+        self.response_text = ""
+        self.photo_received = False
 
-def get_thread_messages(client, thread_id):
-    try:
-        messages = client.beta.threads.messages.list(thread_id=thread_id)
-        for message in messages.data:
-            logging.info(f"Message: {message.content[0].text.value}")
-    except Exception as e:
-        logging.error(f"An error occurred while retrieving messages: {e}")
+    def on_text_created(self, text) -> None:
+        pass
 
+    def on_text_delta(self, delta, snapshot):
+        self.response_text += delta.value
+
+    def on_tool_call_created(self, tool_call):
+        print(f"\nassistant > {tool_call.type}\n", flush=True)
+
+    def on_tool_call_delta(self, delta, snapshot):
+        if delta.type == 'code_interpreter':
+            if delta.code_interpreter.input:
+                print(delta.code_interpreter.input, end="", flush=True)
+            if delta.code_interpreter.outputs:
+                print(f"\n\noutput >", flush=True)
+                for output in delta.code_interpreter.outputs:
+                    if output.type == "logs":
+                        print(f"\n{output.logs}", flush=True)
+
+# Асинхронная функция для отправки сообщения в Telegram
+async def send_telegram_notification(user_id):
+    await telegram_bot.send_message(chat_id=telegram_chat_id, text=f"Новый клиент отправил фото. User ID: {user_id}")
+
+# Функция для обработки получения фото и завершения диалога
+def handle_photo_submission(user_id, data):
+    asyncio.run(send_telegram_notification(user_id))
+    return "Мне нужно до 30 минут чтобы ответить вам."
+
+# Функция для создания нового потока и отправки сообщения пользователю
 def handle_message_new(data):
     message = data['object']['message']['text']
     user_id = data['object']['message']['from_id']
+    attachments = data['object']['message'].get('attachments', [])
 
-    # Генерация ответа с помощью OpenAI
-    run = client.beta.threads.runs.create(thread_id=thread_id, assistant_id=assistant_id)
-    run_id = run.id
-    response_text = wait_for_run_completion(client, thread_id, run_id)
+    if attachments and any(attachment['type'] == 'photo' for attachment in attachments):
+        return handle_photo_submission(user_id, {"photo_info": str(attachments), "contact_info": ""})
+
+    # Создание нового потока для каждого пользователя
+    thread = client.beta.threads.create()
+
+    # Создание нового сообщения в потоке
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=message
+    )
+
+    # Создание экземпляра EventHandler для захвата ответа
+    event_handler = EventHandler()
+
+    # Использование потоковой передачи для выполнения команды
+    with client.beta.threads.runs.stream(
+        thread_id=thread.id,
+        assistant_id=assistant.id,
+        instructions="Ты консультант по кузовному ремонту авто. Твоя цель — помочь клиенту и предложить услуги автосервиса, включая замену порогов и арок, покраску элементов авто. Всегда спрашивай у клиента фото повреждений и контактные данные для записи на осмотр.",
+        event_handler=event_handler,
+    ) as stream:
+        stream.until_done()
 
     # Логирование истории сообщений
-    get_thread_messages(client, thread_id)
+    get_thread_messages(client, thread.id)
+
+    response_text = event_handler.response_text.strip()
 
     if response_text:
         try:
@@ -75,7 +119,20 @@ def handle_message_new(data):
         except vk_api.VkApiError as e:
             logging.error(f"Ошибка VK API: {e}")
             return f"Ошибка VK API: {e}", 500
+    else:
+        logging.error("Ответ от OpenAI не был получен.")
+        return "Ответ от OpenAI не был получен.", 500
+
     return 'ok'
+
+# Функция получения сообщений из потока OpenAI
+def get_thread_messages(client, thread_id):
+    try:
+        messages = client.beta.threads.messages.list(thread_id=thread_id)
+        for message in messages.data:
+            logging.info(f"Message: {message.content[0].text.value}")
+    except Exception as e:
+        logging.error(f"An error occurred while retrieving messages: {e}")
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
@@ -90,3 +147,4 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+
