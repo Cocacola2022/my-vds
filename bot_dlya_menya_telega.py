@@ -27,7 +27,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("app_tg_kostya.log"),
-        logging.StreamHandler()
     ]
 )
 
@@ -65,27 +64,42 @@ async def handle_telegram_message(update):
     message = update.message.text
     chat_id = update.message.chat.id
 
+    if not message:
+        logging.error("Получено пустое сообщение из Telegram.")
+        await send_telegram_message(chat_id, "Пустое сообщение.")
+        return
+
     # Создание нового потока для каждого пользователя
     thread = client.beta.threads.create()
 
     # Создание нового сообщения в потоке
-    client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=message
-    )
+    try:
+        client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content=message  # Убедитесь, что это не null
+        )
+    except Exception as e:
+        logging.error(f"Ошибка при создании сообщения в OpenAI: {e}")
+        await send_telegram_message(chat_id, "Ошибка при создании сообщения в OpenAI.")
+        return
 
     # Создание экземпляра EventHandler для захвата ответа
     event_handler = EventHandler()
 
     # Использование потоковой передачи для выполнения команды с существующим помощником
-    with client.beta.threads.runs.stream(
-        thread_id=thread.id,
-        assistant_id=assistant_id,  # Используем существующего помощника
-        instructions="ты самый крутой помощник и консультант Можешь отвечать на любые вопросы. Ты api, код pytho3, линукс команды",
-        event_handler=event_handler,
-    ) as stream:
-        stream.until_done()
+    try:
+        with client.beta.threads.runs.stream(
+            thread_id=thread.id,
+            assistant_id=assistant_id,  # Используем существующего помощника
+            instructions="ты самый крутой помощник и консультант Можешь отвечать на любые вопросы. Ты api, код pytho3, линукс команды",
+            event_handler=event_handler,
+        ) as stream:
+            stream.until_done()
+    except Exception as e:
+        logging.error(f"Ошибка при выполнении команды с помощником: {e}")
+        await send_telegram_message(chat_id, "Ошибка при выполнении команды с помощником.")
+        return
 
     response_text = event_handler.response_text.strip()
 
@@ -123,4 +137,3 @@ if __name__ == '__main__':
 
     # Запуск Telegram бота с использованием long polling
     asyncio.run(start_telegram_bot())  # Асинхронный запуск
-
