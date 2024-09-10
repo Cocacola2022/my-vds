@@ -30,6 +30,9 @@ logging.basicConfig(
     ]
 )
 
+# Словарь для хранения thread_id для каждого пользователя
+user_threads = {}
+
 # Класс обработчика событий для работы с потоковой передачей ответов от Assistant
 class EventHandler(AssistantEventHandler):
     def __init__(self):
@@ -61,23 +64,51 @@ async def send_telegram_message(chat_id, text):
 
 # Асинхронная функция для обработки сообщений из Telegram
 async def handle_telegram_message(update):
-    message = update.message.text
     chat_id = update.message.chat.id
+
+    # Проверка, если сообщение содержит фото
+    if update.message.photo:
+        # Завершение потока пользователя, если он существует
+        if chat_id in user_threads:
+            try:
+                client.beta.threads.delete(thread_id=user_threads[chat_id])  # Завершаем поток
+                del user_threads[chat_id]  # Удаляем информацию о потоке из словаря
+                logging.info(f"Поток для пользователя {chat_id} завершен из-за отправки фото.")
+            except Exception as e:
+                logging.error(f"Ошибка при завершении потока для пользователя {chat_id}: {e}")
+
+        # Отправка сообщения в чат о том, что пользователь отправил фото
+        await send_telegram_message(chat_id, "Пользователь отправил фото.")
+        return  # Завершаем выполнение функции
+
+    # Обработка текстовых сообщений
+    message = update.message.text
 
     if not message:
         logging.error("Получено пустое сообщение из Telegram.")
         await send_telegram_message(chat_id, "Пустое сообщение.")
         return
 
-    # Создание нового потока для каждого пользователя
-    thread = client.beta.threads.create()
+    # Проверка, существует ли поток для данного пользователя
+    if chat_id not in user_threads:
+        # Создание нового потока для каждого пользователя
+        try:
+            thread = client.beta.threads.create()
+            user_threads[chat_id] = thread.id
+            logging.info(f"Создан новый поток для пользователя {chat_id}")
+        except Exception as e:
+            logging.error(f"Ошибка при создании нового потока: {e}")
+            await send_telegram_message(chat_id, "Ошибка при создании нового потока.")
+            return
+    else:
+        logging.info(f"Используется существующий поток для пользователя {chat_id}")
 
     # Создание нового сообщения в потоке
     try:
         client.beta.threads.messages.create(
-            thread_id=thread.id,
+            thread_id=user_threads[chat_id],
             role="user",
-            content=message  # Убедитесь, что это не null
+            content=message
         )
     except Exception as e:
         logging.error(f"Ошибка при создании сообщения в OpenAI: {e}")
@@ -90,9 +121,9 @@ async def handle_telegram_message(update):
     # Использование потоковой передачи для выполнения команды с существующим помощником
     try:
         with client.beta.threads.runs.stream(
-            thread_id=thread.id,
-            assistant_id=assistant_id,  # Используем существующего помощника
-            instructions="Меня зовут - Толстячёк.Ты самый лучший консультант и помощник. Ты отвечаешь на любые мои вопросы и можешь помочь с чем угодно",
+            thread_id=user_threads[chat_id],
+            assistant_id=assistant_id,
+            instructions="ты самый крутой помощник и консультант Можешь отвечать на любые вопросы. Ты api, код python3, линукс команды",
             event_handler=event_handler,
         ) as stream:
             stream.until_done()
@@ -116,7 +147,7 @@ async def start_telegram_bot():
     while True:
         try:
             # Получаем обновления от Telegram
-            updates = await telegram_bot.get_updates(offset=update_id, timeout=10)  # await для асинхронного вызова
+            updates = await telegram_bot.get_updates(offset=update_id, timeout=10)
             for update in updates:
                 if update.message:
                     await handle_telegram_message(update)
@@ -136,4 +167,4 @@ if __name__ == '__main__':
     Thread(target=lambda: app.run(host='0.0.0.0', port=8081)).start()
 
     # Запуск Telegram бота с использованием long polling
-    asyncio.run(start_telegram_bot())  # Асинхронный запуск
+    asyncio.run(start_telegram_bot())
