@@ -1,0 +1,192 @@
+2024-09-13 12:23:19,367 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:80
+ * Running on http://77.221.132.47:80
+2024-09-13 12:23:19,368 - INFO - [33mPress CTRL+C to quit[0m
+2024-09-13 12:23:37,399 - INFO - 95.142.196.4 - - [13/Sep/2024 12:23:37] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:23:44,656 - INFO - HTTP Request: POST https://api.openai.com/v1/threads "HTTP/1.1 200 OK"
+2024-09-13 12:23:44,667 - INFO - Создан новый поток для пользователя 15908040
+2024-09-13 12:23:45,113 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:23:46,103 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/runs "HTTP/1.1 200 OK"
+2024-09-13 12:23:47,076 - INFO - 95.142.196.4 - - [13/Sep/2024 12:23:47] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:23:49,408 - INFO - HTTP Request: GET https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:23:49,412 - INFO - Message: Здравствуйте! Готов помочь вам с консультацией по кузовным работам. 
+
+Расскажите, пожалуйста, о проблеме с вашим автомобилем. Вы планируете замену порогов, арок или, может быть, требуется покраска какого-то элемента? 
+
+Если возможно, пришлите фото повреждений, чтобы я мог точнее оценить объем работы.
+2024-09-13 12:23:49,413 - INFO - Message: э
+2024-09-13 12:23:49,680 - INFO - 95.142.198.140 - - [13/Sep/2024 12:23:49] "POST /webhook HTTP/1.1" 200 -
+2024-09-13 12:23:49,685 - INFO - 95.142.197.1 - - [13/Sep/2024 12:23:49] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:23:50,062 - INFO - 95.142.196.26 - - [13/Sep/2024 12:23:50] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:23:52,694 - INFO - 95.142.196.4 - - [13/Sep/2024 12:23:52] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:23:57,167 - INFO - Используется существующий поток для пользователя 15908040
+2024-09-13 12:23:57,454 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:23:58,014 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/runs "HTTP/1.1 200 OK"
+2024-09-13 12:23:59,099 - INFO - 95.142.196.26 - - [13/Sep/2024 12:23:59] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:00,072 - INFO - 95.142.197.132 - - [13/Sep/2024 12:24:00] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:02,081 - INFO - 95.142.196.140 - - [13/Sep/2024 12:24:02] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:03,278 - INFO - HTTP Request: GET https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:24:03,281 - INFO - Message: Чтобы помочь вам лучше, мне нужно больше информации о вашем автомобиле и повреждениях. 
+
+Вы планируете заменить пороги, арки, покрасить какие-то элементы? Пожалуйста, пришлите фото повреждений, чтобы я мог оценить объем работ и предложить точные цены.
+
+Могу также предложить:
+
+- Ремонтный порог за 1800 рублей за один.
+- Ремонтную арку за 2500 рублей за одну.
+- Покраска одного элемента от 10000 рублей.
+- Замена порога под ключ от 20000 рублей.
+- Замена арки под ключ от 25000 рублей.
+
+Также, если вы предоставите ваши контактные данные, я смогу записать вас на осмотр в наш автосервис.
+2024-09-13 12:24:03,282 - INFO - Message: че там?
+2024-09-13 12:24:03,282 - INFO - Message: Здравствуйте! Готов помочь вам с консультацией по кузовным работам. 
+
+Расскажите, пожалуйста, о проблеме с вашим автомобилем. Вы планируете замену порогов, арок или, может быть, требуется покраска какого-то элемента? 
+
+Если возможно, пришлите фото повреждений, чтобы я мог точнее оценить объем работы.
+2024-09-13 12:24:03,282 - INFO - Message: э
+2024-09-13 12:24:03,526 - INFO - 95.142.196.4 - - [13/Sep/2024 12:24:03] "POST /webhook HTTP/1.1" 200 -
+2024-09-13 12:24:03,565 - INFO - 95.142.198.140 - - [13/Sep/2024 12:24:03] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:03,886 - INFO - 95.142.198.140 - - [13/Sep/2024 12:24:03] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:13,061 - INFO - 95.142.196.4 - - [13/Sep/2024 12:24:13] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:24:13,095 - INFO - 95.142.198.140 - - [13/Sep/2024 12:24:13] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:11,356 - INFO - 95.142.196.4 - - [13/Sep/2024 12:25:11] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:16,497 - INFO - 95.142.198.140 - - [13/Sep/2024 12:25:16] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:20,491 - INFO - Используется существующий поток для пользователя 15908040
+2024-09-13 12:25:21,077 - INFO - 95.142.196.138 - - [13/Sep/2024 12:25:21] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:22,467 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:25:23,255 - INFO - HTTP Request: POST https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/runs "HTTP/1.1 200 OK"
+2024-09-13 12:25:26,085 - INFO - 95.142.197.6 - - [13/Sep/2024 12:25:26] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:26,520 - INFO - HTTP Request: GET https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ/messages "HTTP/1.1 200 OK"
+2024-09-13 12:25:26,524 - INFO - Message: Отлично! 
+
+Теперь мне нужно больше информации для записи на осмотр. Пожалуйста, предоставьте следующие данные:
+
+1. Ваше имя
+2. Контактный номер телефона
+3. Удобное время для осмотра
+
+Кроме того, не забудьте прислать фото повреждений, чтобы мы могли более точно оценить объем работ.
+
+Спасибо!
+2024-09-13 12:25:26,525 - INFO - Message: устраивает такая запись?
+2024-09-13 12:25:26,525 - INFO - Message: Чтобы помочь вам лучше, мне нужно больше информации о вашем автомобиле и повреждениях. 
+
+Вы планируете заменить пороги, арки, покрасить какие-то элементы? Пожалуйста, пришлите фото повреждений, чтобы я мог оценить объем работ и предложить точные цены.
+
+Могу также предложить:
+
+- Ремонтный порог за 1800 рублей за один.
+- Ремонтную арку за 2500 рублей за одну.
+- Покраска одного элемента от 10000 рублей.
+- Замена порога под ключ от 20000 рублей.
+- Замена арки под ключ от 25000 рублей.
+
+Также, если вы предоставите ваши контактные данные, я смогу записать вас на осмотр в наш автосервис.
+2024-09-13 12:25:26,526 - INFO - Message: че там?
+2024-09-13 12:25:26,526 - INFO - Message: Здравствуйте! Готов помочь вам с консультацией по кузовным работам. 
+
+Расскажите, пожалуйста, о проблеме с вашим автомобилем. Вы планируете замену порогов, арок или, может быть, требуется покраска какого-то элемента? 
+
+Если возможно, пришлите фото повреждений, чтобы я мог точнее оценить объем работы.
+2024-09-13 12:25:26,527 - INFO - Message: э
+2024-09-13 12:25:26,809 - INFO - 95.142.196.140 - - [13/Sep/2024 12:25:26] "POST /webhook HTTP/1.1" 200 -
+2024-09-13 12:25:26,811 - INFO - 95.142.198.140 - - [13/Sep/2024 12:25:26] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:27,158 - INFO - 95.142.196.140 - - [13/Sep/2024 12:25:27] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:36,087 - INFO - 95.142.196.26 - - [13/Sep/2024 12:25:36] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:37,080 - INFO - 95.142.196.138 - - [13/Sep/2024 12:25:37] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:58,684 - INFO - HTTP Request: DELETE https://api.openai.com/v1/threads/thread_qql0rjwu2xKcyx9JHY0EUfPZ "HTTP/1.1 200 OK"
+2024-09-13 12:25:58,687 - INFO - Поток для пользователя 15908040 завершен из-за отправки файла.
+2024-09-13 12:25:59,138 - INFO - HTTP Request: POST https://api.telegram.org/bot7538336234:AAFFsDv_RkMLGvufUowHpwQKEyGhHk9uMhs/sendMessage "HTTP/1.1 200 OK"
+2024-09-13 12:25:59,421 - INFO - 95.142.196.4 - - [13/Sep/2024 12:25:59] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:25:59,443 - INFO - 95.142.196.36 - - [13/Sep/2024 12:25:59] "POST /webhook HTTP/1.1" 200 -
+2024-09-13 12:25:59,727 - INFO - 95.142.197.1 - - [13/Sep/2024 12:25:59] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:26:09,088 - INFO - 95.142.196.36 - - [13/Sep/2024 12:26:09] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:26:09,094 - INFO - 95.142.196.36 - - [13/Sep/2024 12:26:09] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:26:09,180 - ERROR - Exception on /webhook [POST]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/telegram/request/_baserequest.py", line 333, in _request_wrapper
+    code, payload = await self.do_request(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/request/_httpxrequest.py", line 276, in do_request
+    res = await self._client.request(
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_client.py", line 1574, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_client.py", line 1661, in send
+    response = await self._send_handling_auth(
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_client.py", line 1689, in _send_handling_auth
+    response = await self._send_handling_redirects(
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_client.py", line 1726, in _send_handling_redirects
+    response = await self._send_single_request(request)
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_client.py", line 1763, in _send_single_request
+    response = await transport.handle_async_request(request)
+  File "/usr/local/lib/python3.8/dist-packages/httpx/_transports/default.py", line 373, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_async/connection_pool.py", line 216, in handle_async_request
+    raise exc from None
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_async/connection_pool.py", line 189, in handle_async_request
+    await self._close_connections(closing)
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_async/connection_pool.py", line 305, in _close_connections
+    await connection.aclose()
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_async/connection.py", line 171, in aclose
+    await self._connection.aclose()
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_async/http11.py", line 265, in aclose
+    await self._network_stream.aclose()
+  File "/usr/local/lib/python3.8/dist-packages/httpcore/_backends/anyio.py", line 55, in aclose
+    await self._stream.aclose()
+  File "/usr/local/lib/python3.8/dist-packages/anyio/streams/tls.py", line 202, in aclose
+    await self.transport_stream.aclose()
+  File "/usr/local/lib/python3.8/dist-packages/anyio/_backends/_asyncio.py", line 1202, in aclose
+    self._transport.close()
+  File "/usr/lib/python3.8/asyncio/selector_events.py", line 692, in close
+    self._loop.call_soon(self._call_connection_lost, None)
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 719, in call_soon
+    self._check_closed()
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 508, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "play1.py", line 196, in webhook
+    return handle_message_new(data)
+  File "play1.py", line 108, in handle_message_new
+    return handle_file_submission(user_id)
+  File "play1.py", line 88, in handle_file_submission
+    asyncio.run(send_telegram_notification(user_id))
+  File "/usr/lib/python3.8/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "play1.py", line 69, in send_telegram_notification
+    await telegram_bot.send_message(chat_id=telegram_chat_id, text=f"Пользователь отправил файл. User ID: {user_id}")
+  File "/usr/local/lib/python3.8/dist-packages/telegram/_bot.py", line 1029, in send_message
+    return await self._send_message(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/_bot.py", line 745, in _send_message
+    result = await self._post(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/_bot.py", line 623, in _post
+    return await self._do_post(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/_bot.py", line 652, in _do_post
+    result = await request.post(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/request/_baserequest.py", line 201, in post
+    result = await self._request_wrapper(
+  File "/usr/local/lib/python3.8/dist-packages/telegram/request/_baserequest.py", line 345, in _request_wrapper
+    raise NetworkError(f"Unknown error in HTTP implementation: {exc!r}") from exc
+telegram.error.NetworkError: Unknown error in HTTP implementation: RuntimeError('Event loop is closed')
+2024-09-13 12:26:09,219 - INFO - 95.142.196.36 - - [13/Sep/2024 12:26:09] "[35m[1mPOST /webhook HTTP/1.1[0m" 500 -
+2024-09-13 12:26:47,075 - INFO - 95.142.197.132 - - [13/Sep/2024 12:26:47] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:27:00,121 - INFO - 95.142.197.6 - - [13/Sep/2024 12:27:00] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:27:03,092 - INFO - 95.142.198.140 - - [13/Sep/2024 12:27:03] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:27:06,081 - INFO - 95.142.196.138 - - [13/Sep/2024 12:27:06] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:27:13,075 - INFO - 95.142.196.138 - - [13/Sep/2024 12:27:13] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
+2024-09-13 12:27:13,102 - INFO - 95.142.197.132 - - [13/Sep/2024 12:27:13] "[31m[1mPOST /webhook HTTP/1.1[0m" 415 -
