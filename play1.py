@@ -1,31 +1,29 @@
 import os
 import vk_api
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
-from flask import Flask, request
+from vk_api.longpoll import VkLongPoll, VkEventType
+from flask import Flask
 from openai import OpenAI, AssistantEventHandler
 from dotenv import load_dotenv
 import logging
 import telegram
 import asyncio
 
-# Загрузка переменных окружения из файла .env
 load_dotenv()
 
-# Инициализация OpenAI клиента с использованием постоянного ID асистента из .env
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 assistant_id = os.getenv('ASSISTANT_KUZOVNOI_REMONT')
 
-# Путь к файлу porogi_arki.xlsx
 data_file_path = os.path.join(os.path.dirname(__file__), "porogi_arki.xlsx")
 
-# Настройки для отправки уведомлений в Telegram
 telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
 telegram_bot = telegram.Bot(token=telegram_bot_token)
 
+vk_session = vk_api.VkApi(token=os.getenv('VK_API_TOKEN'))
+vk = vk_session.get_api()
+
 app = Flask(__name__)
 
-# Настройка логирования для записи в файл и консоль
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -35,10 +33,8 @@ logging.basicConfig(
     ]
 )
 
-# Словарь для хранения thread_id для каждого пользователя
 user_threads = {}
 
-# Класс обработчика событий для работы с потоковой передачей ответов от Assistant
 class EventHandler(AssistantEventHandler):
     def __init__(self):
         super().__init__()
@@ -64,52 +60,47 @@ class EventHandler(AssistantEventHandler):
                     if output.type == "logs":
                         print(f"\n{output.logs}", flush=True)
 
-# Асинхронная функция для отправки сообщения в Telegram
 async def send_telegram_notification(user_id):
-    await telegram_bot.send_message(chat_id=telegram_chat_id, text=f"Пользователь отправил файл. User ID: {user_id}")
+    await telegram_bot.send_message(chat_id=telegram_chat_id, text=f"Пользователь отправил файл или фото. User ID: {user_id}")
 
-# Функция для записи диалога в файл
 def write_dialog_to_file(user_question, assistant_response):
     with open("istoria_dialogov.txt", "a", encoding="utf-8") as file:
         file.write(f"Вопрос: {user_question}\nОтвет: {assistant_response}\n\n")
 
-# Функция для обработки получения файла и завершения диалога
 def handle_file_submission(user_id):
-    # Завершение потока пользователя, если он существует
     if user_id in user_threads:
         try:
-            client.beta.threads.delete(thread_id=user_threads[user_id])  # Завершаем поток
-            del user_threads[user_id]  # Удаляем информацию о потоке из словаря
+            client.beta.threads.delete(thread_id=user_threads[user_id])
+            del user_threads[user_id]
             logging.info(f"Поток для пользователя {user_id} завершен из-за отправки файла.")
         except Exception as e:
             logging.error(f"Ошибка при завершении потока для пользователя {user_id}: {e}")
 
-    # Отправка уведомления в Telegram
-    asyncio.run(send_telegram_notification(user_id))
+    loop = asyncio.get_event_loop()
+    if loop.is_closed():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    loop.run_until_complete(send_telegram_notification(user_id))
 
-    # Отправка сообщения в VK
     try:
-        vk_session = vk_api.VkApi(token=os.getenv('VK_API_TOKEN'))
-        vk = vk_session.get_api()
         vk.messages.send(user_id=user_id, message="Мне нужно до 30 минут чтобы ответить вам.", random_id=0)
     except vk_api.VkApiError as e:
         logging.error(f"Ошибка VK API при отправке сообщения: {e}")
 
     return "Мне нужно до 30 минут чтобы ответить вам."
 
-# Функция для создания нового потока и отправки сообщения пользователю
-def handle_message_new(data):
-    message = data['object']['message']['text']
-    user_id = data['object']['message']['from_id']
-    attachments = data['object']['message'].get('attachments', [])
+def handle_message_new(message, user_id, attachments):
+    logging.info(f"Пришло сообщение от {user_id}: {message}")
+    logging.info(f"Вложения: {attachments}")
 
-    # Проверка наличия файла в сообщении (фото или другой файл)
-    if attachments and any(attachment['type'] in ['photo', 'doc'] for attachment in attachments):
+    if attachments:
         return handle_file_submission(user_id)
 
-    # Проверка, существует ли поток для данного пользователя
+    if not message:
+        logging.error("Получено пустое сообщение. Пропускаем отправку в OpenAI.")
+        return "Сообщение без текста пропущено."
+
     if user_id not in user_threads:
-        # Создание нового потока для каждого пользователя
         try:
             thread = client.beta.threads.create()
             user_threads[user_id] = thread.id
@@ -120,7 +111,6 @@ def handle_message_new(data):
     else:
         logging.info(f"Используется существующий поток для пользователя {user_id}")
 
-    # Создание нового сообщения в потоке
     try:
         client.beta.threads.messages.create(
             thread_id=user_threads[user_id],
@@ -131,10 +121,8 @@ def handle_message_new(data):
         logging.error(f"Ошибка при создании сообщения в OpenAI: {e}")
         return "Ошибка при создании сообщения в OpenAI.", 500
 
-    # Создание экземпляра EventHandler для захвата ответа
     event_handler = EventHandler()
 
-    # Использование потоковой передачи для выполнения команды
     try:
         with client.beta.threads.runs.stream(
             thread_id=user_threads[user_id],
@@ -155,17 +143,13 @@ def handle_message_new(data):
         logging.error(f"Ошибка при выполнении команды с помощником: {e}")
         return "Ошибка при выполнении команды с помощником.", 500
 
-    # Логирование истории сообщений
     get_thread_messages(client, user_threads[user_id])
 
     response_text = event_handler.response_text.strip()
 
     if response_text:
         try:
-            vk_session = vk_api.VkApi(token=os.getenv('VK_API_TOKEN'))
-            vk = vk_session.get_api()
             vk.messages.send(user_id=user_id, message=response_text, random_id=0)
-            # Запись диалога в файл
             write_dialog_to_file(message, response_text)
         except vk_api.VkApiError as e:
             logging.error(f"Ошибка VK API: {e}")
@@ -176,7 +160,6 @@ def handle_message_new(data):
 
     return 'ok'
 
-# Функция получения сообщений из потока OpenAI
 def get_thread_messages(client, thread_id):
     try:
         messages = client.beta.threads.messages.list(thread_id=thread_id)
@@ -185,17 +168,15 @@ def get_thread_messages(client, thread_id):
     except Exception as e:
         logging.error(f"An error occurred while retrieving messages: {e}")
 
-@app.route('/webhook', methods=['GET', 'POST'])
-def webhook():
-    if request.method == 'GET':
-        return '5efebf00'
-    elif request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            if 'type' in data and data['type'] == 'message_new':
-                return handle_message_new(data)
-        return 'Unsupported Media Type: Content is not application/json', 415
+def start_vk_longpoll():
+    longpoll = VkLongPoll(vk_session)
+
+    for event in longpoll.listen():
+        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+            user_id = event.user_id
+            message = event.text
+            attachments = event.attachments
+            handle_message_new(message, user_id, attachments)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
-
+    start_vk_longpoll()
